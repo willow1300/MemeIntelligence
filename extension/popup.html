@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIE</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 360px;
+      background: #0a0e14;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #1e293b;
+    }
+    .header .logo {
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: #34d399; font-weight: bold; font-size: 12px;
+    }
+    .header h1 { font-size: 14px; font-weight: 700; }
+    .header .sub { font-size: 10px; color: #64748b; }
+    .search-bar { padding: 10px 16px; border-bottom: 1px solid #1e293b; display: flex; gap: 6px; }
+    .search-bar input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 6px 10px;
+      color: #e2e8f0;
+      font-size: 12px;
+      outline: none;
+    }
+    .search-bar input:focus { border-color: rgba(16,185,129,0.3); }
+    .search-bar button {
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: #34d399;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .search-bar button:hover { background: rgba(16,185,129,0.2); }
+    .content { padding: 12px 16px; max-height: 420px; overflow-y: auto; }
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .loading { display: flex; align-items: center; justify-content: center; padding: 24px; color: #64748b; }
+    .loading .spinner { width: 14px; height: 14px; border: 2px solid #1e293b; border-top-color: #94a3b8; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { padding: 12px; color: #fb7185; text-align: center; font-size: 12px; }
+    .empty { padding: 24px; text-align: center; color: #475569; }
+    .token-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .token-header img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #334155; }
+    .token-header .placeholder { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #334155; background: #1e293b; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #64748b; }
+    .token-header .info h2 { font-size: 15px; font-weight: 700; }
+    .token-header .info .name { font-size: 11px; color: #94a3b8; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    .stat { background: #0f172a; border: 1px solid #1e293b; border-radius: 6px; padding: 8px; }
+    .stat .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 2px; }
+    .stat .value { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+    .stat .value.emerald { color: #34d399; }
+    .stat .value.amber { color: #fbbf24; }
+    .stat .value.rose { color: #fb7185; }
+    .section { border-top: 1px solid #1e293b; padding-top: 10px; margin-top: 10px; }
+    .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 6px; }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; }
+    .badge-emerald { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+    .badge-amber { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+    .badge-rose { background: rgba(251,113,133,0.15); color: #fb7185; border: 1px solid rgba(251,113,133,0.2); }
+    .badge-slate { background: rgba(51,65,85,0.3); color: #94a3b8; border: 1px solid rgba(51,65,85,0.4); }
+    .similar-item { display: flex; align-items: center; gap: 6px; padding: 5px 0; font-size: 12px; }
+    .similar-item .sym { font-weight: 600; color: #34d399; }
+    .similar-item .time { color: #fbbf24; font-size: 11px; }
+    .similar-item .score { color: #94a3b8; font-size: 11px; margin-left: auto; }
+    .evidence { font-size: 11px; color: #64748b; }
+    .evidence ul { list-style: none; padding-left: 0; }
+    .evidence li { padding: 2px 0; padding-left: 10px; position: relative; }
+    .evidence li::before { content: ''; position: absolute; left: 0; top: 7px; width: 3px; height: 3px; border-radius: 50%; background: #475569; }
+    .disclaimer { font-size: 10px; color: #475569; padding: 8px 0; border-top: 1px solid #1e293b; margin-top: 10px; }
+    .collapsible { border: 1px solid #1e293b; border-radius: 6px; margin-bottom: 6px; overflow: hidden; }
+    .collapsible-header { padding: 8px 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: #cbd5e1; background: #0f172a; }
+    .collapsible-header:hover { background: #162032; }
+    .collapsible-header .arrow { transition: transform 0.2s; color: #64748b; }
+    .collapsible-header.open .arrow { transform: rotate(90deg); }
+    .collapsible-body { padding: 8px 10px; border-top: 1px solid #1e293b; display: none; }
+    .collapsible-body.open { display: block; }
+    .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .signal-pill { display: flex; justify-content: space-between; padding: 4px 8px; background: #0f172a; border: 1px solid #1e293b; border-radius: 4px; font-size: 11px; }
+    .signal-pill .l { color: #64748b; text-transform: uppercase; font-size: 9px; }
+    .signal-pill .v { font-weight: 600; }
+    .signal-pill .v.emerald { color: #34d399; }
+    .signal-pill .v.amber { color: #fbbf24; }
+    .signal-pill .v.rose { color: #fb7185; }
+    .overall-badge { padding: 6px 10px; border-radius: 6px; text-align: center; font-weight: 700; font-size: 12px; margin-top: 8px; }
+    .overall-badge.high { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+    .overall-badge.medium { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+    .overall-badge.low { background: rgba(251,113,133,0.1); color: #fb7185; border: 1px solid rgba(251,113,133,0.2); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">M</div>
+    <div>
+      <h1>MIE</h1>
+      <div class="sub">Meme Intelligence Engine</div>
+    </div>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="tokenInput" placeholder="Enter token address..." />
+    <button id="analyzeBtn">Analyze</button>
+  </div>
+  <div class="content" id="content">
+    <div class="empty">Enter a token address to get intelligence.</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
